@@ -17,6 +17,7 @@ public class FileReaderSpout implements IRichSpout {
   private SpoutOutputCollector _collector;
   private TopologyContext context;
   private BufferedReader buffer;
+  private String filename;
 
   public FileReaderSpout(String filename) {
     this.filename = filename;
