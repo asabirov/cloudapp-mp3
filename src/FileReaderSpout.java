@@ -11,22 +11,26 @@ import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 
 public class FileReaderSpout implements IRichSpout {
   private SpoutOutputCollector _collector;
   private TopologyContext context;
+  private BufferedReader buffer;
 
+  public FileReaderSpout(String filename) {
+    this.filename = filename;
+  }
 
   @Override
   public void open(Map conf, TopologyContext context,
                    SpoutOutputCollector collector) {
 
-     /*
-    ----------------------TODO-----------------------
-    Task: initialize the file reader
-
-
-    ------------------------------------------------- */
+    try {
+      buffer = new BufferedReader(new FileReader(filename));
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
 
     this.context = context;
     this._collector = collector;
@@ -34,34 +38,30 @@ public class FileReaderSpout implements IRichSpout {
 
   @Override
   public void nextTuple() {
-
-     /*
-    ----------------------TODO-----------------------
-    Task:
-    1. read the next line and emit a tuple for it
-    2. don't forget to sleep when the file is entirely read to prevent a busy-loop
-
-    ------------------------------------------------- */
-
-
+    try {
+      String line = buffer.readLine();
+      if (line != null) {
+        _collector.emit(new Values(line));
+      } else {
+        Utils.sleep(100);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
     declarer.declare(new Fields("word"));
-
   }
 
   @Override
   public void close() {
-   /*
-    ----------------------TODO-----------------------
-    Task: close the file
-
-
-    ------------------------------------------------- */
-
+    try {
+      buffer.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
