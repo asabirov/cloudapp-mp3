@@ -10,7 +10,7 @@ buildNumber.properties
 
 *put.txt
 
-out.txt
+output-*
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
 
