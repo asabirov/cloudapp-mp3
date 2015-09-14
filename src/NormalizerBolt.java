@@ -7,6 +7,7 @@ import backtype.storm.tuple.Values;
 
 import java.util.Arrays;
 import java.util.List;
+import backtype.storm.utils.Utils;
 
 /**
  * A bolt that normalizes the words, by removing common words and making them lower case.
@@ -20,16 +21,14 @@ public class NormalizerBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
+      String word = tuple.getString(0);
 
-    /*
-    ----------------------TODO-----------------------
-    Task:
-     1. make the words all lower case
-     2. remove the common words
-
-    ------------------------------------------------- */
-
-
+      word = word.trim().toLowerCase();
+      if (!word.isEmpty() && !commonWords.contains(word)) {
+          collector.emit(new Values(word));
+      } else {
+          Utils.sleep(100);
+      }
   }
 
   @Override

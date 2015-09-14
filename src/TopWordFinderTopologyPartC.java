@@ -24,10 +24,10 @@ public class TopWordFinderTopologyPartC {
     Config config = new Config();
     config.setDebug(true);
 
-    builder.setSpout("spout", new FileReaderSpout(args[0]), 1);
-    builder.setBolt("split", new SplitSentenceBolt(), 4).shuffleGrouping("spout");
-    builder.setBolt("count", new WordCountBolt(), 4).fieldsGrouping("split", new Fields("word"));
-    builder.setBolt("normalize", new NormalizerBolt(), 4).fieldsGrouping("count", new Fields("word"));
+    builder.setSpout("spout", new FileReaderSpout(args[0]));
+    builder.setBolt("split", new SplitSentenceBolt(), 10).shuffleGrouping("spout");
+    builder.setBolt("normalize", new NormalizerBolt(), 4).fieldsGrouping("split", new Fields("word"));
+    builder.setBolt("count", new WordCountBolt(), 2).fieldsGrouping("normalize", new Fields("word"));
 
     config.setMaxTaskParallelism(3);
 
