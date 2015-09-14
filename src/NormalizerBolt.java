@@ -27,7 +27,7 @@ public class NormalizerBolt extends BaseBasicBolt {
       if (!word.isEmpty() && !commonWords.contains(word)) {
           collector.emit(new Values(word));
       } else {
-          Utils.sleep(100);
+          //Utils.sleep(100);
       }
   }
 

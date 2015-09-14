@@ -6,6 +6,7 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * a bolt that finds the top n words.
@@ -23,13 +24,13 @@ public class TopNFinderBolt extends BaseBasicBolt {
 
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
- /*
-    ----------------------TODO-----------------------
-    Task: keep track of the top N words
+    String word = tuple.getString(0);
+    Integer count = tuple.getInteger(1);
 
-
-    ------------------------------------------------- */
-
+    if (shouldPlaceInTop(count)) {
+        currentTopWords.put(word, count);
+        truncate();
+    }
 
     //reports the top N words periodically
     if (System.currentTimeMillis() - lastReportTime >= intervalToReport) {
@@ -43,6 +44,42 @@ public class TopNFinderBolt extends BaseBasicBolt {
 
      declarer.declare(new Fields("top-N"));
 
+  }
+
+  private Boolean shouldPlaceInTop(Integer count) {
+      if (currentTopWords.size() < N) {
+          return true;
+      }
+
+      for (Integer value : currentTopWords.values()) {
+          if (value < count) {
+              return true;
+          }
+      }
+
+      return false;
+  }
+
+  private void truncate() {
+      if (currentTopWords.size() > N) {
+          Integer smallest = findSmallest();
+          for (Map.Entry<String, Integer> entry : currentTopWords.entrySet()) {
+              if (entry.getValue().equals(smallest)) {
+                  currentTopWords.remove(entry.getKey());
+                  return ;
+              }
+          }
+      }
+  }
+
+  private Integer findSmallest() {
+      Integer smallest = 0;
+      for (Integer value : currentTopWords.values()) {
+          if (smallest == 0 || smallest > value) {
+              smallest = value;
+          }
+      }
+      return smallest;
   }
 
   public String printMap() {
